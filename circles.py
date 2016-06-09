@@ -1,17 +1,21 @@
 import pygame
+from pygame import gfxdraw
 from scipy.stats import distributions
 
 class Circle(pygame.sprite.Sprite): #Batch of circles is a sprite
 
-	def __init__(self, x, y):
-		super(Circle, self).__init__()
-		self.x=x
-		self.y=y
-		self.r=4
-		self.rect = pygame.Rect(x - self.r, y - self.r, 2 * self.r, 2 * self.r)
-		self.image = pygame.Surface((2*self.r, 2*self.r), pygame.SRCALPHA)
-		color = (250, 250, 250) #light gray
-		pygame.draw.circle(self.image, color, (self.r, self.r), self.r)
+    def __init__(self, x, y):
+        super(Circle, self).__init__()
+        self.x=x
+        self.y=y
+        self.r=4
+        self.rect = pygame.Rect(x - self.r, y - self.r, 2 * self.r, 2 * self.r)
+        self.image = pygame.Surface((2*self.r, 2*self.r), pygame.SRCALPHA)
+        pygame.gfxdraw.aacircle(self.image, self.r, self.r, self.r, (250,250,250))
+        pygame.gfxdraw.filled_circle(self.image, self.r, self.r, self.r, (250,250,250))
+
+    def antialias(self):
+        pygame.gfxdraw.aacircle(self.image, self.r, self.r, self.r, (100,100,100))
 
 class Target(object): #composed of circles, but has other specs too
 
@@ -23,10 +27,14 @@ class Target(object): #composed of circles, but has other specs too
 
         self.circles = pygame.sprite.Group()
 
+        self.rewardQueue = None
+
         self.update()
 
     def __repr__(self):
         return self.pos
+
+    def calculateScore(self): pass
 
     def generateCircles(self):
         self.circles = pygame.sprite.Group() #reset existing circles.
