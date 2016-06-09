@@ -6,15 +6,8 @@ import copy
 from PyAnimation import *
 from circles import Circle
 from circles import Target
+
 """
-def getDistance(point1, point2): #gets the distance between two points
-								 #represented by tuples.
-	(x0, y0)= point1
-	(x1, y1)= point2
-	return ((x1-x0)**2 + (y1-y0)**2)**0.5
-
-
-
 To do:
 - Score calculation algorithm
 - Score feedback to user.
@@ -44,10 +37,11 @@ class Experiment(PygameGame):
 			snd = getCol()
 			self.rewardDF[[fst, snd]] = self.rewardDF[[snd, fst]]
 		def assignRewards():
-			for center in self.centers.keys():
-				for target in self.targets:
-					target.rewardQueue=self.rewardDF[center].tolist()
-		for i in range(100):
+			assert(len(self.centers.keys())==len(self.targets))
+			for i in range(len(self.centers.keys())):
+				rewardList = self.rewardDF[self.centers.keys()[i]].tolist()
+				self.targets[i].rewardQueue= rewardList
+		for i in range(5): #shuffle 20 times
 			shuffleCols()
 
 		assignRewards()
@@ -113,7 +107,7 @@ class Experiment(PygameGame):
 		self.ignoreMousePress = False
 
 	def setCueTimer(self):
-		self.cueTimer=2000 #ms
+		self.cueTimer=700 #ms
 		self.cueTimeSet=False
 
 	def setResponseTime(self):
@@ -144,48 +138,75 @@ class Experiment(PygameGame):
 		self.subjectData["Time(Stim)"].append(pygame.time.get_ticks())
 
 		self.centerMouse()
-		pygame.mouse.set_visible(False) #Don't show the mouse during stimulus.
+		pygame.mouse.set_visible(False)
 
 		#reset Boolean switches for graphics control
 		self.isRecordingMouseMotion=False
 		self.isBackGroundBlack=False
 		self.isMouseMotionTimeSet=False
 
-		#self.mouseMovementData.append(pd.Series(self.mouseMovements)) #save trajectory
-		#self.mouseMovements=list() #reset trajectory.
-
 		#now actually update the targets...
 		for target in self.targets:
 			target.update()
 
 	def showFeedback(self, target, score, endpoint):
+		def darkenColor(color):
+			(r, g, b) = color
+			(r, g, b) = (r/2, g/2, b/2)
+			return (r, g, b)
+		def lightenColor(color):
+			(r,g,b) = color
+			(r, g, b) = (r + (255-r)/10, g + (255-g)/10, b + (255-b)/10)
+			return (r, g, b)
+
 		self.screen.fill(self.bgColor)
+		target.circles.update(darkenColor(target.color))
 		target.circles.draw(self.screen)
 		pygame.draw.circle(self.screen, (255,0,0), endpoint, 2) #red
-		myfont = pygame.font.SysFont("Arial", 35)
-		label = myfont.render("Some text!", True, (255,255,255))
+		pygame.draw.circle(self.screen, target.color, (target.cx, target.cy), 4) #red
+		myfont = pygame.font.SysFont("Arial", 55)
+		label = myfont.render(str(score), True, target.color)
 
 		self.mouseMovementData.append(pd.Series(self.mouseMovements)) #save trajectory
 		self.mouseMovements=list() #reset trajectory.
 
-		self.screen.blit(label, endpoint)
-		self.redrawAll(self.screen)
+		(posX, posY) = (target.cx-30, target.cy-150)
+		thisColor = target.color
 
-		pygame.time.wait(800)
+		for i in range(10):
+			label=myfont.render(str(score), True, thisColor)
+			self.screen.blit(label, (posX, posY))
+			pygame.display.flip()
+			label.fill(self.bgColor)
+			self.screen.blit(label, (posX, posY))
+			posY-=1
+			thisColor = lightenColor(thisColor)
+			pygame.time.delay(30)
+
+		#pygame.time.wait(1500)
+		target.circles.update(target.color)
 
 	def calculateScore(self, x, y): #target indexing CCW, beginning at left
+		def calculateDistancePenalty(offset): ##############
+			return offset
+
+		#calculate closest distance
 		distancesFromCenters=list()
 		for target in self.targets:
 			thisDistance=target.getDistance(x, y)
 			distancesFromCenters.append(thisDistance)
-		closest = min(distancesFromCenters) #distance in pixels
-		assert(closest in distancesFromCenters)
-		targetHit = self.targets[distancesFromCenters.index(closest)] #index!
+
+		closestDis = min(distancesFromCenters) #distance in pixels
+
+		targetHit = self.targets[distancesFromCenters.index(closestDis)] #index!
+		rawScore = targetHit.getScore()
+		score = int(round(rawScore - calculateDistancePenalty(closestDis)))
+
+		print rawScore, calculateDistancePenalty(closestDis)
+
+		#data to append to trials df
 		(targetX, targetY) = (targetHit.cx, targetHit.cy)
 		(offsetX, offsetY) = (abs(targetX-x), abs(targetY-y))
-		score = (50 - closest) * 2
-
-		print score, self.trial
 
 		#set trial data
 		self.subjectData["EndpointX"].append(x)
@@ -203,10 +224,8 @@ class Experiment(PygameGame):
 		if dt>=500:
 			print "Called with big dt"
 			return #pause from previous call.
-		if self.cueTimer%3==0: print self.cueTimer
 		if self.cueTimer<=0:
 			self.cueTimer=0
-			pygame.mouse.set_visible(True)
 			self.isRecordingMouseMotion=True
 			if not self.isBackGroundBlack: self.redrawAll(self.screen)
 		else:
@@ -231,6 +250,9 @@ class Experiment(PygameGame):
 			if self.trial==11:
 				self.pandaify()
 			#SHOW SCORE FEEDBACK SOMEWHERE HERE
+			self.screen.fill(self.bgColor)
+			pygame.display.flip()
+			pygame.time.delay(random.randint(250,2500))
 			self.updateTargets()
 
 	def keyPressed(self, keyCode, modifier): pass

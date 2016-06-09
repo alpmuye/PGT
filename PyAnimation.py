@@ -10,29 +10,29 @@ import pygame
 
 class PygameGame(object):
 
-    def init(self): pass 
+    def init(self): pass
 
     def mousePressed(self, x, y): pass
 
-    def mouseReleased(self, x, y): pass 
+    def mouseReleased(self, x, y): pass
 
-    def mouseMotion(self, x, y): pass 
+    def mouseMotion(self, x, y): pass
 
     def mouseDrag(self, x, y): pass
 
     def keyPressed(self, keyCode, modifier): pass
 
-    def keyReleased(self, keyCode, modifier): pass 
+    def keyReleased(self, keyCode, modifier): pass
 
-    def timerFired(self, dt): pass 
+    def timerFired(self, dt): pass
 
-    def redrawAll(self, screen): pass 
+    def redrawAll(self, screen): pass
 
     def isKeyPressed(self, key):
         ''' return whether a specific key is being held '''
         return self._keys.get(key, False)
 
-    def __init__(self, subjectID, load="low", variance="low", circleCount=70, 
+    def __init__(self, subjectID, load="low", variance="low", circleCount=70,
                 width=900, height=700, fps=200, title="CoAx Experiment"):
         self.width = width
         self.height = height
@@ -51,7 +51,7 @@ class PygameGame(object):
     def run(self):
         clock = pygame.time.Clock()
         screen = pygame.display.set_mode((self.width, self.height))
-        self.screen=screen 
+        self.screen=screen
         # set the title of the window
         pygame.display.set_caption(self.title)
 
