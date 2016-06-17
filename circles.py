@@ -64,9 +64,8 @@ class Target(object): #composed of circles, but has other specs too
             thisCircle=Circle(thisX, thisY, self.color) #Circle Class
             self.circles.add(thisCircle) #add to Pygame sprite group
 
-    def getDistance(self, x, y): #returns the distance between center/(x, y)
+    def getDistance(self, x, y):
         return ((self.cx-x)**2 + (self.cy-y)**2)**0.5
 
-    def update(self): #generates new circles, updates queues and reward rates
+    def update(self):
         self.generateCircles()
-        #modify queues

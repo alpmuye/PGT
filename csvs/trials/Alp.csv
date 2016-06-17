@@ -1,0 +1,9 @@
+,idx,block,trial,variance,load,time_stim,time_cue,rt_choice,rt,reach_time,end_x,end_y,target_loc,offset_x,ReachOffsetY,score
+0,Alp,1,1,high,high,1673,2849,861,345,516,741,343,right,66,7,-16
+1,Alp,1,2,high,high,5934,7074,726,123,603,426,162,up,24,13,73
+0,Alp,2,1,high,low,11124,12255,837,141,696,204,344,left,21,6,53
+1,Alp,2,2,high,low,15301,16443,824,384,440,647,341,right,28,9,46
+0,Alp,3,1,low,high,19981,21109,912,331,581,443,159,up,7,16,83
+1,Alp,3,2,low,high,24236,25375,726,267,459,627,359,right,48,9,1
+0,Alp,4,1,low,high,29896,31010,856,309,547,234,343,left,9,7,89
+1,Alp,4,2,low,high,34091,35228,775,246,529,471,519,down,21,6,78
