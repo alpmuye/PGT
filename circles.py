@@ -19,7 +19,6 @@ class Circle(pygame.sprite.Sprite): #Batch of circles is a sprite
         pygame.gfxdraw.aacircle(self.image, self.r, self.r, self.r, (100,100,100))
 
     def update(self, color):
-        print "updating color"
         pygame.gfxdraw.aacircle(self.image, self.r, self.r, self.r, color)
         pygame.gfxdraw.filled_circle(self.image, self.r, self.r, self.r, color)
 

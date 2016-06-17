@@ -32,20 +32,24 @@ class PygameGame(object):
         ''' return whether a specific key is being held '''
         return self._keys.get(key, False)
 
-    def __init__(self, subjectID, load="low", variance="low", circleCount=70,
+    def __init__(self, subjectID, load="low", variance="low",
+                block=1, circleCount=70,
                 width=900, height=700, fps=200, title="CoAx Experiment"):
         self.width = width
         self.height = height
         self.fps = fps
         self.title = title
         self.bgColor = (0, 0, 0)
+        self.isBlockOver = False #for control over event flow in Blocks.py
 
         #experiment data
         self.load=load
         self.variance=variance
         self.circleCount=circleCount
         self.subjectID=subjectID
+        self.block = block
 
+        print "Initializing block" + str(block)
         pygame.init()
 
     def run(self):
@@ -89,6 +93,8 @@ class PygameGame(object):
                     self.keyReleased(event.key, event.mod)
                 elif event.type == pygame.QUIT:
                     playing = False
+            if self.isBlockOver:
+                playing = False
         pygame.quit()
 
 
